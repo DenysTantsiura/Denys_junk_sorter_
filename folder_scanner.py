@@ -17,28 +17,27 @@ def get_extension(filename: str) -> str:
 
 
 def file_operations(folder: Path, filename: str) -> bool:
-    '''
-    Recursively scans the contents of folders and subfolders, 
-    normalizing them and filling the file lists.
+    """
+    Determines whether the file type is known and saves the file path.
 
         Parameters:
             folder(Path): A simple path of folder where is file.
-            filename(str): A file name whith extension.
+            filename(str): A file name with extension.
 
         Returns:
             True or False (bool): Successful file type recognition marker.
-    '''
+    """
     extension = get_extension(filename)
-    fullpath = folder / filename  # full path to the file
+    fullpath = folder.joinpath(filename)  # full path to the file
 
     if not extension:  # if the file has no extension add to unknown
         file_paths_by_category['other'].append(fullpath)
 
     else:
-        for category in DATABASE_OF_EXTENSIONS:
-            if extension.lower() in DATABASE_OF_EXTENSIONS[category]:
+        for category_ in DATABASE_OF_EXTENSIONS:
+            if extension.lower() in DATABASE_OF_EXTENSIONS[category_]:
                 EXTENSIONS.add(extension)
-                file_paths_by_category[category].append(fullpath)
+                file_paths_by_category[category_].append(fullpath)
 
                 return True
 
@@ -49,8 +48,8 @@ def file_operations(folder: Path, filename: str) -> bool:
 
 
 def scanning(folder: Path) -> None:
-    '''
-    Recursively scans the contents of folders and subfolders, 
+    """
+    Recursively scans the contents of folders and sub-folders,
     normalizing them and filling the file lists.
 
         Parameters:
@@ -58,7 +57,7 @@ def scanning(folder: Path) -> None:
 
         Returns:
             None
-    '''
+    """
     for item in folder.iterdir():
         # If the current element is a folder, then we normalize its name,
         # add it to the FOLDERS list and check the next element
@@ -66,10 +65,11 @@ def scanning(folder: Path) -> None:
         if item.is_dir():
             # We check that the folder is not a category folder.
             if item.name not in file_paths_by_category:
-                item = item.rename(item.parent.resolve() /
-                                   f'{normalize(item.name)}')
+                item = item.rename(item.parent.resolve().joinpath(
+                    f'{normalize(item.name)}'))
                 FOLDERS.append(item)
                 scanning(item)
+
             continue
 
         # Working with a file if the element is not a folder
@@ -81,9 +81,11 @@ if __name__ == '__main__':
     if len(sys.argv) == 2:
         # Make the path absolute
         folder_for_scan = Path(sys.argv[1]).resolve()
+
         if folder_for_scan.is_dir():
             print(f'Start scanning in folder: {folder_for_scan}')
             scanning(Path(folder_for_scan))
+
             for category, file_paths in file_paths_by_category.items():
                 for file in file_paths:
                     print(f'"{category}": {file.name}')
