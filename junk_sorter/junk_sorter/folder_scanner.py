@@ -1,7 +1,8 @@
 import sys
 from pathlib import Path
-from extensions import DATABASE_OF_EXTENSIONS
-from string_normalize import normalize
+
+from junk_sorter.extensions import DATABASE_OF_EXTENSIONS
+from junk_sorter import string_normalize
 
 FOLDERS = []
 EXTENSIONS = set()
@@ -66,7 +67,7 @@ def scanning(folder: Path) -> None:
             # We check that the folder is not a category folder.
             if item.name not in file_paths_by_category:
                 item = item.rename(item.parent.resolve().joinpath(
-                    f'{normalize(item.name)}'))
+                    f'{string_normalize.normalize(item.name)}'))
                 FOLDERS.append(item)
                 scanning(item)
 
