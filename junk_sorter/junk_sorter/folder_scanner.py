@@ -1,8 +1,11 @@
 import sys
 from pathlib import Path
+from threading import Thread
 
-from junk_sorter.extensions import DATABASE_OF_EXTENSIONS
-from junk_sorter import string_normalize
+# from junk_sorter.extensions import DATABASE_OF_EXTENSIONS
+# from junk_sorter import string_normalize
+from extensions import DATABASE_OF_EXTENSIONS
+import string_normalize
 
 FOLDERS = []
 EXTENSIONS = set()
@@ -69,7 +72,10 @@ def scanning(folder: Path) -> None:
                 item = item.rename(item.parent.resolve().joinpath(
                     f'{string_normalize.normalize(item.name)}'))
                 FOLDERS.append(item)
-                scanning(item)
+                thread_scan_subfolder = Thread(target=scanning, args=(item,))
+                thread_scan_subfolder.start()
+                thread_scan_subfolder.join()  # returns into main thread after all sub-threads
+                # scanning(item)
 
             continue
 

@@ -2,8 +2,10 @@ from pathlib import Path
 import shutil
 import sys
 
-import junk_sorter.folder_scanner as scan
-from junk_sorter import string_normalize
+# import junk_sorter.folder_scanner as scan
+# from junk_sorter import string_normalize
+import folder_scanner as scan
+import string_normalize
 
 
 def check_new_name(folder: Path, fs_name_obj: Path) -> str:
