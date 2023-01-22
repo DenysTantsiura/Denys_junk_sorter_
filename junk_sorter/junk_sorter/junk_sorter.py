@@ -1,6 +1,7 @@
 from pathlib import Path
 import shutil
 import sys
+from time import time
 
 # import junk_sorter.folder_scanner as scan
 # from junk_sorter import string_normalize
@@ -194,8 +195,8 @@ def junk_sorter(folder: Path) -> None:
                 handle_data(file, folder.joinpath(category))
 
     # Reverse the list to delete all folders
-    for folder in scan.FOLDERS[::-1]:
-        delete_empty_folder(folder)
+    # for folder in scan.FOLDERS[::-1]:
+    #     delete_empty_folder(folder)
 
 
 def new_name(try_new_name: str, add_cx: int) -> str:
@@ -226,6 +227,7 @@ def print_author():
 def main():
     # Start junk sorter. Run: python3 main.py "full folder path for sorting"
     if len(sys.argv) == 2:
+        start_scan = time()
         # Make the path absolute
         folder_for_sorting = Path(sys.argv[1]).resolve()
 
@@ -236,6 +238,8 @@ def main():
 
         else:
             print(f'Sorry, but "{folder_for_sorting}" is NOT a folder! Bye!')
+
+        print(f'Operation duration: {time() - start_scan} sec')
 
     else:
         print('Sorry, but NO folder specified! Bye!')

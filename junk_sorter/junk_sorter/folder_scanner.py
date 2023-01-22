@@ -4,10 +4,11 @@ from threading import Thread
 
 # from junk_sorter.extensions import DATABASE_OF_EXTENSIONS
 # from junk_sorter import string_normalize
+from junk_sorter import delete_empty_folder
 from extensions import DATABASE_OF_EXTENSIONS
 import string_normalize
 
-FOLDERS = []
+# FOLDERS = []
 EXTENSIONS = set()
 UNKNOWN = set()
 # create empty lists for each file category
@@ -71,11 +72,16 @@ def scanning(folder: Path) -> None:
             if item.name not in file_paths_by_category:
                 item = item.rename(item.parent.resolve().joinpath(
                     f'{string_normalize.normalize(item.name)}'))
-                FOLDERS.append(item)
+                # FOLDERS.append(item)
                 thread_scan_subfolder = Thread(target=scanning, args=(item,))
                 thread_scan_subfolder.start()
                 thread_scan_subfolder.join()  # returns into main thread after all sub-threads
                 # scanning(item)
+                while thread_scan_subfolder.is_alive():
+                    pass
+                thread_remove_empty = Thread(target=delete_empty_folder, args=(item,))
+                thread_remove_empty.start()
+                thread_remove_empty.join()  # returns into main thread after all sub-threads
 
             continue
 
@@ -99,7 +105,7 @@ if __name__ == '__main__':
 
             print(f'\nTypes of files in folder: {EXTENSIONS}\n')
             print(f'Unknown files of types: {UNKNOWN}\n')
-            print(FOLDERS[::-1])
+            # print(FOLDERS[::-1])
 
         else:
             print(f'Sorry, but "{folder_for_scan}" is NOT a folder! Bye!')
